@@ -39,7 +39,6 @@ static void           convert_address(const char *address, struct sockaddr_stora
 static int            socket_create(int domain, int type, int protocol);
 static void           socket_bind(int sockfd, struct sockaddr_storage *addr, in_port_t port);
 static void           start_listening(int server_fd, int backlog);
-static int            socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_len);
 static void           handle_connection(int client_sockfd, char *command);
 static void           socket_close(int sockfd);
 
@@ -176,7 +175,7 @@ int main(int argc, char *argv[])
         for(size_t i = 0; i < max_clients; i++)
         {
             sd = client_sockets[i];
-            if(FD_ISSET(sd, &readfds))
+            if(FD_ISSET((unsigned int)sd, &readfds))
             {
                 char     buffer[LENGTH];
                 ssize_t  bytes_read;
@@ -192,7 +191,7 @@ int main(int argc, char *argv[])
                     // Client closed the connection
                     printf("Client %d disconnected\n", sd);
                     close(sd);
-                    FD_CLR(sd, &readfds);
+                    FD_CLR((unsigned int)sd, &readfds);
                     // Handle client cleanup, if necessary
                 }
                 else if(bytes_read < 0)
@@ -200,7 +199,7 @@ int main(int argc, char *argv[])
                     // Error reading from client
                     perror("Read error");
                     close(sd);
-                    FD_CLR(sd, &readfds);
+                    FD_CLR((unsigned int)sd, &readfds);
                     // Handle error, if necessary
                 }
                 else
@@ -494,25 +493,6 @@ static void start_listening(int server_fd, int backlog)
     }
 
     printf("Listening for incoming connections...\n");
-}
-
-static int socket_accept_connection(int server_fd, struct sockaddr_storage *client_addr, socklen_t *client_len)
-{
-    int client_fd;
-
-    *client_len = sizeof(*client_addr);
-    client_fd   = accept(server_fd, (struct sockaddr *)client_addr, client_len);
-
-    if(client_fd == -1)
-    {
-        perror("accept failed");
-        close(server_fd);
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Accepted a new connection\n");
-
-    return client_fd;
 }
 
 static void setup_signal_handler(void)
