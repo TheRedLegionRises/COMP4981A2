@@ -1,0 +1,5 @@
+/home/jerry/COMP4981/A2/build/CMakeFiles/client.dir
+/home/jerry/COMP4981/A2/build/CMakeFiles/server.dir
+/home/jerry/COMP4981/A2/build/CMakeFiles/format.dir
+/home/jerry/COMP4981/A2/build/CMakeFiles/edit_cache.dir
+/home/jerry/COMP4981/A2/build/CMakeFiles/rebuild_cache.dir
